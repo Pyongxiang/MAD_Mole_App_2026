@@ -27,6 +27,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 
 
@@ -68,8 +72,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun Whackamole(modifier: Modifier = Modifier) {
 
-    val score = 0
-    val time = 0
+    var score by remember { mutableStateOf(0) }
+    var time by remember { mutableStateOf(30) }
+    var currentMoleIndex by remember { mutableStateOf((0..8).random()) }
+    var activeGame by remember { mutableStateOf(false) }
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -88,11 +94,43 @@ fun Whackamole(modifier: Modifier = Modifier) {
         ) {
             items(9) { index ->
                 Button(
-                    onClick = {},
+                    onClick = {
+                        if (index == currentMoleIndex){
+                            score++
+                            currentMoleIndex = (0..8).random()
+                        }
+                    },
                     modifier = Modifier.padding(4.dp)
                 ) {}
             }
         }
+
+        Row(
+            modifier = modifier,
+            horizontalArrangement = Arrangement.Center
+        ){
+            Button(onClick = {
+                if (!activeGame) {
+                    score = 0
+                    time = 30
+                    activeGame = true
+                }
+            }) {
+                Text("start")
+            }
+
+            Button(onClick = {
+                activeGame = false
+                score = 0
+                time = 30
+                currentMoleIndex = -1 //so no mole shows up
+            }) {
+                Text("reset")
+            }
+        }
+
+
+
     }
 }
 
