@@ -1,5 +1,6 @@
 package np.ict.mad.moleappmad
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -80,12 +81,21 @@ fun Whackamole(modifier: Modifier = Modifier) {
     var currentMoleIndex by remember { mutableStateOf((0..8).random()) }
     var activeGame by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+    val sharedPref = remember { context.getSharedPreferences("MolePrefs", Context.MODE_PRIVATE) }
+    var highScore by remember { mutableStateOf(sharedPref.getInt("high_score", 0)) }
+
     LaunchedEffect(activeGame) {
         while (activeGame == true) {
             delay(1000L)
             time--
             if (time == 0)
                 activeGame = false
+
+                if (score > highScore){
+                    highScore = score
+                    sharedPref.edit().putInt("high_score", highScore).apply()
+                }
         }
     }
 
@@ -166,6 +176,10 @@ fun Whackamole(modifier: Modifier = Modifier) {
                 text = "Final Score: $score",
             )
         }
+
+        Text(
+            text = "High Score: $highScore"
+        )
 
 
     }
