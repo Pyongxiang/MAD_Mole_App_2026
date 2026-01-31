@@ -8,8 +8,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MoleAppMAD">
+
         <activity
-            android:name=".loginPage"
+            android:name=".LoginPage"
             android:exported="true"
             android:label="@string/title_activity_login_page"
             android:theme="@style/Theme.MoleAppMAD">
@@ -19,10 +20,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainActivity"
             android:exported="false">
+
         </activity>
     </application>
 

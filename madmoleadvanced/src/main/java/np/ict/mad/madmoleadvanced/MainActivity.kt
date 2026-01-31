@@ -53,7 +53,7 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(title = { Text("Wack-a-Mole") },
                             actions = {
                                 IconButton(onClick = {
-                                    val intent = Intent(context, np.ict.mad.madmoleadvanced .loginPage::class.java)
+                                    val intent = Intent(context, np.ict.mad.madmoleadvanced .LoginPage::class.java)
                                     context.startActivity(intent)})
                                 {
                                     Icon(
