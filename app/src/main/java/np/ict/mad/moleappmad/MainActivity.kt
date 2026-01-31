@@ -181,7 +181,6 @@ fun Whackamole(modifier: Modifier = Modifier) {
             text = "High Score: $highScore"
         )
 
-
     }
 }
 
