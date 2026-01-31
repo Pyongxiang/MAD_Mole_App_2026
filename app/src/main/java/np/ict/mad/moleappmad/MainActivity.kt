@@ -5,9 +5,14 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -15,11 +20,11 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import np.ict.mad.moleappmad.ui.theme.MoleAppMADTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.ui.platform.LocalContext
@@ -62,11 +67,32 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun Whackamole(modifier: Modifier = Modifier) {
-    // This is your Root Layout Column
+
+    val score = 0
+    val time = 0
     Column(
-        modifier = modifier
-            .fillMaxSize(), // Fills the remaining screen space
-        horizontalAlignment = Alignment.CenterHorizontally // Centers items horizontally
-    ) {}
+        modifier = modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(text = "Score: $score")
+            Text(text = "Time: $time")
+        }
+
+        LazyVerticalGrid(
+            modifier = modifier,
+            columns = GridCells.Fixed(3)
+        ) {
+            items(9) { index ->
+                Button(
+                    onClick = {},
+                    modifier = Modifier.padding(4.dp)
+                ) {}
+            }
+        }
+    }
 }
 
