@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Mad MoleAdvanced</string>
     <string name="title_activity_login_page">loginPage</string>
+    <string name="title_activity_leaderboard_page">LeaderboardPage</string>
 </resources>

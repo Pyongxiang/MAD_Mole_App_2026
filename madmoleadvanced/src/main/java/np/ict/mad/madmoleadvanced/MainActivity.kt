@@ -34,8 +34,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.room.Dao
-import androidx.room.Query
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -68,7 +66,7 @@ class MainActivity : ComponentActivity() {
                         TopAppBar(title = { Text("Wack-a-Mole - $currentUserName") },
                             actions = {
                                 IconButton(onClick = {
-                                    val intent = Intent(context, np.ict.mad.madmoleadvanced .LoginPage::class.java)
+                                    val intent = Intent(context, np.ict.mad.madmoleadvanced .LeaderboardPage::class.java)
                                     context.startActivity(intent)})
                                 {
                                     Icon(
@@ -81,7 +79,11 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) { innerPadding ->
-                    Whackamole(modifier = Modifier.padding(innerPadding))
+                    Whackamole(
+                        modifier = Modifier.padding(innerPadding),
+                        username = currentUserName, // Pass ID
+                        db = db          // Pass Database
+                    )
                 }
             }
         }
@@ -89,7 +91,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Whackamole(modifier: Modifier = Modifier) {
+fun Whackamole(modifier: Modifier = Modifier, username: String, db: AppDB) {
 
     var score by remember { mutableStateOf(0) }
     var time by remember { mutableStateOf(30) }
@@ -100,16 +102,31 @@ fun Whackamole(modifier: Modifier = Modifier) {
     val sharedPref = remember { context.getSharedPreferences("MolePrefs", Context.MODE_PRIVATE) }
     var highScore by remember { mutableStateOf(sharedPref.getInt("high_score", 0)) }
 
+
+    LaunchedEffect(username) {
+        if (username != "Guest") {
+            highScore = db.dao().getHighScoreForUser(username) ?: 0
+        }
+    }
+
     LaunchedEffect(activeGame) {
-        while (activeGame == true) {
+        while (activeGame) {
             delay(1000L)
             time--
-            if (time == 0)
-                activeGame = false
 
-            if (score > highScore){
-                highScore = score
-                sharedPref.edit().putInt("high_score", highScore).apply()
+            if (time == 0) {
+                activeGame = false
+                if (username != "Guest" && score > highScore) {
+                    // Call directly because LaunchedEffect is a coroutine scope
+                    db.dao().insertScore(
+                        Score(
+                            userId = username, // The username String
+                            score = score,
+                            timestamp = System.currentTimeMillis()
+                        )
+                    )
+                    highScore = score
+                }
             }
         }
     }

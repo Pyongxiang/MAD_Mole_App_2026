@@ -32,6 +32,7 @@ import androidx.room.Dao
 import androidx.room.Database
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
@@ -107,7 +108,12 @@ fun LoginScreen(modifier: Modifier = Modifier) {
     }
 }
 
-@Entity(tableName = "Users")
+
+@Entity(
+    tableName = "Users",
+    // This fix solves the "unique constraint" error
+    indices = [Index(value = ["username"], unique = true)]
+)
 data class User(
     @PrimaryKey(autoGenerate = true) val userId: Int = 0,
     val username: String,
@@ -119,7 +125,7 @@ data class User(
     foreignKeys = [
         ForeignKey(
             entity = User::class,
-            parentColumns = ["userId"],
+            parentColumns = ["username"],
             childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE
         )
@@ -128,10 +134,11 @@ data class User(
 data class Score(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val userId: Int,
+    val userId: String,
     val score: Int,
     val timestamp: Long = System.currentTimeMillis()
 )
+
 
 @Dao
 interface UserDao {
@@ -143,6 +150,18 @@ interface UserDao {
 
     @Query("SELECT * FROM Users WHERE userId = :id LIMIT 1")
     suspend fun getUserById(id: Int): User?
+
+    @Insert
+    suspend fun insertScore(score: Score)
+
+    // Changed userId parameter to String
+    @Query("SELECT MAX(score) FROM Score WHERE userId = :username")
+    suspend fun getHighScoreForUser(username: String): Int?
+
+    @Query("SELECT * FROM Score ORDER BY score ASC")
+    suspend fun getAllScores(): List<Score>
+
+
 }
 
 @Database(entities = [User::class, Score::class], version = 1)
