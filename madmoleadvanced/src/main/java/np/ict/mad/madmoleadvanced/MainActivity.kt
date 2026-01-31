@@ -81,8 +81,8 @@ class MainActivity : ComponentActivity() {
                 ) { innerPadding ->
                     Whackamole(
                         modifier = Modifier.padding(innerPadding),
-                        username = currentUserName, // Pass ID
-                        db = db          // Pass Database
+                        userId = userId,
+                        db = db
                     )
                 }
             }
@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Whackamole(modifier: Modifier = Modifier, username: String, db: AppDB) {
+fun Whackamole(modifier: Modifier = Modifier, userId: Int, db: AppDB) {
 
     var score by remember { mutableStateOf(0) }
     var time by remember { mutableStateOf(30) }
@@ -103,24 +103,23 @@ fun Whackamole(modifier: Modifier = Modifier, username: String, db: AppDB) {
     var highScore by remember { mutableStateOf(sharedPref.getInt("high_score", 0)) }
 
 
-    LaunchedEffect(username) {
-        if (username != "Guest") {
-            highScore = db.dao().getHighScoreForUser(username) ?: 0
+    LaunchedEffect(userId) {
+        if (userId != -1) {
+            highScore = db.dao().getHighScoreForUser(userId) ?: 0
         }
+
     }
 
     LaunchedEffect(activeGame) {
         while (activeGame) {
             delay(1000L)
             time--
-
             if (time == 0) {
                 activeGame = false
-                if (username != "Guest" && score > highScore) {
-                    // Call directly because LaunchedEffect is a coroutine scope
+                if (userId != -1 && score > highScore) {
                     db.dao().insertScore(
                         Score(
-                            userId = username, // The username String
+                            userId = userId,
                             score = score,
                             timestamp = System.currentTimeMillis()
                         )

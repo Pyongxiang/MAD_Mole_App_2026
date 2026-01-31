@@ -109,32 +109,31 @@ fun LoginScreen(modifier: Modifier = Modifier) {
 }
 
 
-@Entity(
-    tableName = "Users",
-    // This fix solves the "unique constraint" error
-    indices = [Index(value = ["username"], unique = true)]
-)
+@Entity(tableName = "Users")
 data class User(
     @PrimaryKey(autoGenerate = true) val userId: Int = 0,
     val username: String,
     val pass: String
 )
 
+
+
 @Entity(
     tableName = "Score",
     foreignKeys = [
         ForeignKey(
             entity = User::class,
-            parentColumns = ["username"],
+            parentColumns = ["userId"],
             childColumns = ["userId"],
             onDelete = ForeignKey.CASCADE
         )
     ]
 )
+
 data class Score(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val userId: String,
+    val userId: Int,
     val score: Int,
     val timestamp: Long = System.currentTimeMillis()
 )
@@ -154,15 +153,14 @@ interface UserDao {
     @Insert
     suspend fun insertScore(score: Score)
 
-    // Changed userId parameter to String
-    @Query("SELECT MAX(score) FROM Score WHERE userId = :username")
-    suspend fun getHighScoreForUser(username: String): Int?
+    @Query("SELECT MAX(score) FROM Score WHERE userId = :userId")
+    suspend fun getHighScoreForUser(userId: Int): Int?
 
     @Query("SELECT * FROM Score ORDER BY score ASC")
     suspend fun getAllScores(): List<Score>
 
-
 }
+
 
 @Database(entities = [User::class, Score::class], version = 1)
 abstract class AppDB : RoomDatabase() {
