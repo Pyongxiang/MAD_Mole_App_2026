@@ -86,7 +86,6 @@ fun Whackamole(modifier: Modifier = Modifier) {
             time--
             if (time == 0)
                 activeGame = false
-                time == 30
         }
     }
 
@@ -155,8 +154,18 @@ fun Whackamole(modifier: Modifier = Modifier) {
             }) {
                 Text("reset")
             }
+
+
         }
 
+        if (time == 0 && activeGame == false) {
+            Text(
+                text = "GAME OVER",
+            )
+            Text(
+                text = "Final Score: $score",
+            )
+        }
 
 
     }
