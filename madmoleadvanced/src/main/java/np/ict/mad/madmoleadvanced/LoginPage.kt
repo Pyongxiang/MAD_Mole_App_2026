@@ -85,7 +85,9 @@ fun LoginScreen(modifier: Modifier = Modifier) {
             scope.launch {
                 val user = db.dao().signIn(username, password)
                 if (user != null) {
-                    val intent = Intent(context, MainActivity::class.java)
+                    val intent = Intent(context, MainActivity::class.java).apply {
+                        putExtra("USER_ID", user.userId)
+                    }
                     context.startActivity(intent)
                 }
             }
@@ -138,6 +140,9 @@ interface UserDao {
 
     @Query("SELECT * FROM Users WHERE username = :u AND pass = :p LIMIT 1")
     suspend fun signIn(u: String, p: String): User?
+
+    @Query("SELECT * FROM Users WHERE userId = :id LIMIT 1")
+    suspend fun getUserById(id: Int): User?
 }
 
 @Database(entities = [User::class, Score::class], version = 1)

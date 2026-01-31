@@ -34,6 +34,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.room.Dao
+import androidx.room.Query
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
@@ -45,12 +47,25 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             val context = LocalContext.current
+            val db = remember { AppDB.get(context) }
+            val userId = intent.getIntExtra("USER_ID", -1)
+
+            var currentUserName by remember { mutableStateOf("Guest") }
+
+            LaunchedEffect(userId) {
+                if (userId != -1) {
+                    val user = db.dao().getUserById(userId)
+                    if (user != null) {
+                        currentUserName = user.username
+                    }
+                }
+            }
 
             MoleAppMADTheme {
                 Scaffold(
                     modifier = Modifier.fillMaxSize(),
                     topBar = {
-                        TopAppBar(title = { Text("Wack-a-Mole") },
+                        TopAppBar(title = { Text("Wack-a-Mole - $currentUserName") },
                             actions = {
                                 IconButton(onClick = {
                                     val intent = Intent(context, np.ict.mad.madmoleadvanced .LoginPage::class.java)
