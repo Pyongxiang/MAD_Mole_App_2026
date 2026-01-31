@@ -27,11 +27,14 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.delay
+import kotlin.random.Random
 
 
 class MainActivity : ComponentActivity() {
@@ -76,6 +79,27 @@ fun Whackamole(modifier: Modifier = Modifier) {
     var time by remember { mutableStateOf(30) }
     var currentMoleIndex by remember { mutableStateOf((0..8).random()) }
     var activeGame by remember { mutableStateOf(false) }
+
+    LaunchedEffect(activeGame) {
+        while (activeGame == true) {
+            delay(1000L)
+            time--
+            if (time == 0)
+                activeGame = false
+                time == 30
+        }
+    }
+
+    LaunchedEffect(activeGame) {
+        while (activeGame == true) {
+            currentMoleIndex = Random.nextInt(9)
+            delay(Random.nextLong(700, 1001))
+        }
+        currentMoleIndex = -1
+
+    }
+
+
     Column(
         modifier = modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -101,7 +125,11 @@ fun Whackamole(modifier: Modifier = Modifier) {
                         }
                     },
                     modifier = Modifier.padding(4.dp)
-                ) {}
+                ) {
+                    if (index == currentMoleIndex) {
+                        Text("Mole")
+                    }
+                }
             }
         }
 
